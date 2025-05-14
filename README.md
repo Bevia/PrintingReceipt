@@ -72,7 +72,3 @@ Feel free to fork this project, suggest improvements, or open pull requests.
 
 ### License ⚖️
 This project is licensed under the **MIT License** – you're free to use, modify, and share it.  
-
----
-
-Would you like to customize it further or add setup instructions for a specific environment? 🚀😃
