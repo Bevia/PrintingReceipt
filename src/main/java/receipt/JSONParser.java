@@ -5,6 +5,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,19 +50,25 @@ public class JSONParser {
             JSONObject orderJson = data.optJSONObject("order");
             if (orderJson != null) {
                 order.setTransactionId(orderJson.optString("transaction_id", "Not available"));
-                order.setAmountRefunded(orderJson.optBigDecimal("amountrefunded", BigDecimal.valueOf(0)));
 
-                //order.setAmount(orderJson.optBigDecimal("amount", BigDecimal.valueOf(0)));
                 String amountStr = orderJson.optString("amount", "0");
-                BigDecimal amount = new BigDecimal(amountStr);
+                BigDecimal amount = amountStr.equals("null") || amountStr.isEmpty()
+                        ? BigDecimal.ZERO
+                        : new BigDecimal(amountStr).divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
                 order.setAmount(amount);
 
-                //order.setTip(orderJson.optBigDecimal("tip", BigDecimal.valueOf(0)));
                 String tipStr = orderJson.optString("tip", "0");
-                BigDecimal tip = new BigDecimal(tipStr);
+                BigDecimal tip = tipStr.equals("null") || tipStr.isEmpty()
+                        ? BigDecimal.ZERO
+                        : new BigDecimal(tipStr).divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
                 order.setTip(tip);
 
-                order.setAmount(orderJson.optBigDecimal("amount", BigDecimal.valueOf(0)));
+                String amountRefundedStr = orderJson.optString("amountrefunded", "0");
+                BigDecimal amountRefunded = amountRefundedStr.equals("null") || amountRefundedStr.isEmpty()
+                        ? BigDecimal.ZERO
+                        : new BigDecimal(amountRefundedStr).divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
+                order.setAmountRefunded(amountRefunded);
+
                 order.setCurrency(orderJson.optString("currency", "Not available"));
                 order.setCompleted(orderJson.optString("completed", "Not available"));
             }
@@ -75,7 +82,13 @@ public class JSONParser {
                     if (transactionJson != null) {
                         RelatedTransaction transaction = new RelatedTransaction();
                         transaction.setTransactionId(transactionJson.optLong("transaction_id", 0));
-                        transaction.setAmount(transactionJson.optBigDecimal("amount", BigDecimal.valueOf(0)));
+
+                        String amountStr = transactionJson.optString("amount", "0");
+                        BigDecimal amount = amountStr.equals("null") || amountStr.isEmpty()
+                                ? BigDecimal.ZERO
+                                : new BigDecimal(amountStr).divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
+                        order.setAmount(amount);
+
                         transaction.setReferenceTransactionId(transactionJson.optLong("reference_transaction_id", 0));
                         transaction.setOrderId(transactionJson.optString("order_id", "Not available"));
                         transaction.setCurrency(transactionJson.optString("currency", "Not available"));
@@ -129,9 +142,6 @@ public class JSONParser {
 
         // Convert JsonResponse to HashMap
         HashMap<String, String> receiptDataMap = JsonUtils.convertToMap(Objects.requireNonNull(response)); // Convert JsonResponse to HashMap
-
-        // Pass HashMap to ReceiptPrinter
-        //ReceiptPrinter printer = new ReceiptPrinter(receiptDataMap);
 
         ReceiptPrinter printer = new ReceiptPrinter(response, receiptDataMap);
         printer.printReceipt();
@@ -220,12 +230,12 @@ public class JSONParser {
                 + "\"name\": \"MultiSafepay B.V.\""
                 + "},"
                 + "\"order\": {"
-                + "\"amount\": 1,"
+                + "\"amount\": 200,"
                 + "\"amountrefunded\": 0,"
                 + "\"completed\": \"2025-05-13T12:10:56\","
                 + "\"currency\": \"EUR\","
                 + "\"items\": null,"
-                + "\"tip\": 4.23,"
+                + "\"tip\": 423,"
                 + "\"transaction_id\": \"1747131054104206\""
                 + "},"
                 + "\"payment\": {"

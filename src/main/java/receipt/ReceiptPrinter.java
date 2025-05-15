@@ -3,9 +3,6 @@ package receipt;
 import java.math.BigDecimal;
 import java.util.HashMap;
 
-import java.math.BigDecimal;
-import java.util.HashMap;
-
 public class ReceiptPrinter {
     private JsonResponse jsonResponse;
     private HashMap<String, String> receiptData;
@@ -27,9 +24,11 @@ public class ReceiptPrinter {
         System.out.println("Payment Method: " + getValue("payment_method", jsonResponse.getData().getPayment().getPaymentMethod()));
         System.out.println("Transaction ID: " + getValue("order_transaction_id", jsonResponse.getData().getOrder().getTransactionId()));
 
-        System.out.println("AMOUNT: " + getValue("order_amount", jsonResponse.getData().getOrder().getAmount().toString()));
+        BigDecimal amount = jsonResponse.getData().getOrder().getAmount();
+        if (amount.compareTo(BigDecimal.ZERO) > 0) {
+            System.out.println("AMOUNT: " + amount);
+        }
 
-        // Handle TIP safely
         BigDecimal tipAmount = jsonResponse.getData().getOrder().getTip();
         if (tipAmount.compareTo(BigDecimal.ZERO) > 0) {
             System.out.println("TIP: " + tipAmount);
