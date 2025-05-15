@@ -1,9 +1,12 @@
 package receipt;
 
+import java.math.BigDecimal;
+
 public class Order {
     private String transactionId;
-    private int amountRefunded;
-    private int amount;
+    private BigDecimal amountRefunded;
+    private BigDecimal amount;
+    private BigDecimal tip;
     private String currency;
     private String completed;
 
@@ -11,15 +14,18 @@ public class Order {
     public String getTransactionId() { return transactionId; }
     public void setTransactionId(String transactionId) { this.transactionId = transactionId; }
 
-    public int getAmountRefunded() { return amountRefunded; }
-    public void setAmountRefunded(int amountRefunded) { this.amountRefunded = amountRefunded; }
+    public BigDecimal getAmountRefunded() { return amountRefunded; }
+    public void setAmountRefunded(BigDecimal amountRefunded) { this.amountRefunded = amountRefunded; }
 
-    public int getAmount() { return amount; }
-    public void setAmount(int amount) { this.amount = amount; }
+    public BigDecimal getAmount() { return amount; }
+    public void setAmount(BigDecimal amount) { this.amount = amount; }
 
     public String getCurrency() { return currency; }
     public void setCurrency(String currency) { this.currency = currency; }
 
     public String getCompleted() { return completed; }
     public void setCompleted(String completed) { this.completed = completed; }
+
+    public BigDecimal getTip() {return tip;}
+    public void setTip(BigDecimal tip) {this.tip = tip;}
 }

@@ -7,8 +7,8 @@ import java.util.HashMap;
 public class JSONMapper {
     public static void main(String[] args) {
         // Your JSON string
-        JSONObject jsonObject = getJsonObjectWithRelatedTransactions();
-        //JSONObject jsonObject = getJsonObject();
+        //JSONObject jsonObject = getJsonObjectWithRelatedTransactions();
+        JSONObject jsonObject = getJsonObject();
 
         System.out.println(jsonObject.toString(4));
 

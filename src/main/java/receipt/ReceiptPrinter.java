@@ -1,5 +1,6 @@
 package receipt;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 
 public class ReceiptPrinter {
@@ -17,6 +18,21 @@ public class ReceiptPrinter {
         System.out.println("Merchant Address: " + receiptData.getOrDefault("merchant_address", "N/A"));
         System.out.println("Payment Method: " + receiptData.getOrDefault("payment_method", "N/A"));
         System.out.println("Transaction ID: " + receiptData.getOrDefault("order_transaction_id", "N/A"));
+
+        System.out.println("AMOUNT: " + receiptData.getOrDefault("order_amount", "N/A"));
+
+        String tipValue = receiptData.getOrDefault("order_tip", "0");
+
+        try {
+            BigDecimal tipAmount = new BigDecimal(tipValue); // Convert String to BigDecimal
+            if (tipAmount.compareTo(BigDecimal.ZERO) > 0) {
+                System.out.println("TIP: " + tipValue);
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid tip value: " + tipValue);
+        }
+
+        System.out.println("CURRENCY: " + receiptData.getOrDefault("order_currency", "N/A"));
         System.out.println("Related Transaction IDs: " + receiptData.getOrDefault("related_transaction_ids", "N/A"));
         System.out.println("Success: " + receiptData.getOrDefault("success", "N/A"));
         System.out.println("---------------------------");

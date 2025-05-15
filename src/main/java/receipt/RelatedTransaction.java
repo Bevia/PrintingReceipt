@@ -1,8 +1,10 @@
 package receipt;
 
+import java.math.BigDecimal;
+
 public class RelatedTransaction {
     private long transactionId;
-    private int amount;
+    private BigDecimal amount;
     private long referenceTransactionId;
     private String orderId;
     private String currency;
@@ -12,8 +14,8 @@ public class RelatedTransaction {
     public long getTransactionId() { return transactionId; }
     public void setTransactionId(long transactionId) { this.transactionId = transactionId; }
 
-    public int getAmount() { return amount; }
-    public void setAmount(int amount) { this.amount = amount; }
+    public BigDecimal getAmount() { return amount; }
+    public void setAmount(BigDecimal amount) { this.amount = amount; }
 
     public long getReferenceTransactionId() { return referenceTransactionId; }
     public void setReferenceTransactionId(long referenceTransactionId) { this.referenceTransactionId = referenceTransactionId; }

@@ -3,6 +3,8 @@ package receipt;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,8 +49,19 @@ public class JSONParser {
             JSONObject orderJson = data.optJSONObject("order");
             if (orderJson != null) {
                 order.setTransactionId(orderJson.optString("transaction_id", "Not available"));
-                order.setAmountRefunded(orderJson.optInt("amountrefunded", 0));
-                order.setAmount(orderJson.optInt("amount", 0));
+                order.setAmountRefunded(orderJson.optBigDecimal("amountrefunded", BigDecimal.valueOf(0)));
+
+                //order.setAmount(orderJson.optBigDecimal("amount", BigDecimal.valueOf(0)));
+                String amountStr = orderJson.optString("amount", "0");
+                BigDecimal amount = new BigDecimal(amountStr);
+                order.setAmount(amount);
+
+                //order.setTip(orderJson.optBigDecimal("tip", BigDecimal.valueOf(0)));
+                String tipStr = orderJson.optString("tip", "0");
+                BigDecimal tip = new BigDecimal(tipStr);
+                order.setTip(tip);
+
+                order.setAmount(orderJson.optBigDecimal("amount", BigDecimal.valueOf(0)));
                 order.setCurrency(orderJson.optString("currency", "Not available"));
                 order.setCompleted(orderJson.optString("completed", "Not available"));
             }
@@ -62,7 +75,7 @@ public class JSONParser {
                     if (transactionJson != null) {
                         RelatedTransaction transaction = new RelatedTransaction();
                         transaction.setTransactionId(transactionJson.optLong("transaction_id", 0));
-                        transaction.setAmount(transactionJson.optInt("amount", 0));
+                        transaction.setAmount(transactionJson.optBigDecimal("amount", BigDecimal.valueOf(0)));
                         transaction.setReferenceTransactionId(transactionJson.optLong("reference_transaction_id", 0));
                         transaction.setOrderId(transactionJson.optString("order_id", "Not available"));
                         transaction.setCurrency(transactionJson.optString("currency", "Not available"));
@@ -121,6 +134,7 @@ public class JSONParser {
         mappedData.put("order_transaction_id", data.getOrder().getTransactionId());
         mappedData.put("order_amount", String.valueOf(data.getOrder().getAmount()));
         mappedData.put("order_currency", data.getOrder().getCurrency());
+        mappedData.put("order_tip", String.valueOf(data.getOrder().getTip()));
 
         // Related Transactions
         List<RelatedTransaction> relatedTransactions = data.getRelatedTransactions();
@@ -148,7 +162,7 @@ public class JSONParser {
         JSONObject jsonObject = getJsonObject();
 
         //JSONObject jsonObject = getJsonObject();
-        //System.out.println(jsonObject.toString(4));
+        System.out.println(jsonObject.toString(4));
 
         // Parse JSON into JsonResponse object
         JsonResponse response = JSONParser.parseJson(jsonObject);
@@ -249,7 +263,7 @@ public class JSONParser {
                 + "\"completed\": \"2025-05-13T12:10:56\","
                 + "\"currency\": \"EUR\","
                 + "\"items\": null,"
-                + "\"tip\": null,"
+                + "\"tip\": 4.23,"
                 + "\"transaction_id\": \"1747131054104206\""
                 + "},"
                 + "\"payment\": {"
