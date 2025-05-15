@@ -131,7 +131,9 @@ public class JSONParser {
         HashMap<String, String> receiptDataMap = JsonUtils.convertToMap(Objects.requireNonNull(response)); // Convert JsonResponse to HashMap
 
         // Pass HashMap to ReceiptPrinter
-        ReceiptPrinter printer = new ReceiptPrinter(receiptDataMap);
+        //ReceiptPrinter printer = new ReceiptPrinter(receiptDataMap);
+
+        ReceiptPrinter printer = new ReceiptPrinter(response, receiptDataMap);
         printer.printReceipt();
 
     }

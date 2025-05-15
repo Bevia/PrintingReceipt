@@ -3,43 +3,53 @@ package receipt;
 import java.math.BigDecimal;
 import java.util.HashMap;
 
+import java.math.BigDecimal;
+import java.util.HashMap;
+
 public class ReceiptPrinter {
+    private JsonResponse jsonResponse;
     private HashMap<String, String> receiptData;
 
-    // Constructor
-    public ReceiptPrinter(HashMap<String, String> receiptData) {
+    // Constructor: Accept both JsonResponse and HashMap
+    public ReceiptPrinter(JsonResponse jsonResponse, HashMap<String, String> receiptData) {
+        this.jsonResponse = jsonResponse;
         this.receiptData = receiptData;
     }
 
     // Print receipt method
     public void printReceipt() {
         System.out.println("--------- Receipt ---------");
-        System.out.println("Printed On: " + receiptData.getOrDefault("printed_on", "N/A"));
-        System.out.println("Merchant Address: " + receiptData.getOrDefault("merchant_address", "N/A"));
-        System.out.println("Payment Method: " + receiptData.getOrDefault("payment_method", "N/A"));
-        System.out.println("Transaction ID: " + receiptData.getOrDefault("order_transaction_id", "N/A"));
 
-        System.out.println("AMOUNT: " + receiptData.getOrDefault("order_amount", "N/A"));
+        // Retrieve from JsonResponse (model) or fallback to HashMap
+        System.out.println("Printed On: " + getValue("printed_on", jsonResponse.getData().getPrintedOn()));
+        System.out.println("Merchant Name: " + getValue("merchant_name", jsonResponse.getData().getMerchant().getName()));
+        System.out.println("Merchant Address: " + getValue("merchant_address", jsonResponse.getData().getMerchant().getAddress()));
+        System.out.println("Payment Method: " + getValue("payment_method", jsonResponse.getData().getPayment().getPaymentMethod()));
+        System.out.println("Transaction ID: " + getValue("order_transaction_id", jsonResponse.getData().getOrder().getTransactionId()));
 
-        String tipValue = receiptData.getOrDefault("order_tip", "0");
+        System.out.println("AMOUNT: " + getValue("order_amount", jsonResponse.getData().getOrder().getAmount().toString()));
 
-        try {
-            BigDecimal tipAmount = new BigDecimal(tipValue); // Convert String to BigDecimal
-            if (tipAmount.compareTo(BigDecimal.ZERO) > 0) {
-                System.out.println("TIP: " + tipValue);
-            }
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid tip value: " + tipValue);
+        // Handle TIP safely
+        BigDecimal tipAmount = jsonResponse.getData().getOrder().getTip();
+        if (tipAmount.compareTo(BigDecimal.ZERO) > 0) {
+            System.out.println("TIP: " + tipAmount);
         }
 
-        System.out.println("CURRENCY: " + receiptData.getOrDefault("order_currency", "N/A"));
+        System.out.println("CURRENCY: " + getValue("order_currency", jsonResponse.getData().getOrder().getCurrency()));
 
-        String relatedTransactionIds = receiptData.getOrDefault("related_transaction_ids", "N/A");
-
+        // Related Transactions (print only if present)
+        String relatedTransactionIds = receiptData.getOrDefault("related_transaction_ids", "None");
         if (!relatedTransactionIds.equals("None")) {
             System.out.println("Related Transaction IDs: " + relatedTransactionIds);
         }
 
         System.out.println("---------------------------");
     }
+
+    // Helper method to retrieve value from JsonResponse or HashMap
+    private String getValue(String key, String modelValue) {
+        String mapValue = receiptData.getOrDefault(key, "N/A");
+        return !mapValue.equals("N/A") ? mapValue : modelValue;
+    }
 }
+
