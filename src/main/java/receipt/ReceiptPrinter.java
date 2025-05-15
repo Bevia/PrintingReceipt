@@ -33,8 +33,13 @@ public class ReceiptPrinter {
         }
 
         System.out.println("CURRENCY: " + receiptData.getOrDefault("order_currency", "N/A"));
-        System.out.println("Related Transaction IDs: " + receiptData.getOrDefault("related_transaction_ids", "N/A"));
-        System.out.println("Success: " + receiptData.getOrDefault("success", "N/A"));
+
+        String relatedTransactionIds = receiptData.getOrDefault("related_transaction_ids", "N/A");
+
+        if (!relatedTransactionIds.equals("None")) {
+            System.out.println("Related Transaction IDs: " + relatedTransactionIds);
+        }
+
         System.out.println("---------------------------");
     }
 }
