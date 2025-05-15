@@ -3,6 +3,7 @@ package receipt;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class JSONParser {
@@ -85,9 +86,65 @@ public class JSONParser {
         return jsonResponse;
     }
 
+    public static HashMap<String, String> convertToMap(JsonResponse jsonResponse) {
+        HashMap<String, String> mappedData = new HashMap<>();
+
+        Data data = jsonResponse.getData();
+        mappedData.put("printed_on", data.getPrintedOn());
+        mappedData.put("success", String.valueOf(jsonResponse.isSuccess()));
+
+        // Merchant
+        mappedData.put("merchant_address", data.getMerchant().getAddress());
+        mappedData.put("merchant_name", data.getMerchant().getName());
+
+        // Payment
+        mappedData.put("payment_method", data.getPayment().getPaymentMethod());
+        mappedData.put("card_entry_mode", data.getPayment().getCardEntryMode());
+        mappedData.put("authorization_code", data.getPayment().getAuthorizationCode());
+        mappedData.put("terminal_id", data.getPayment().getTerminalId());
+
+        // Order
+        mappedData.put("order_transaction_id", data.getOrder().getTransactionId());
+        mappedData.put("order_amount", String.valueOf(data.getOrder().getAmount()));
+        mappedData.put("order_currency", data.getOrder().getCurrency());
+
+        // Related Transactions
+        List<RelatedTransaction> relatedTransactions = data.getRelatedTransactions();
+        if (relatedTransactions != null && !relatedTransactions.isEmpty()) {
+            StringBuilder transactionIds = new StringBuilder();
+            for (RelatedTransaction transaction : relatedTransactions) {
+                transactionIds.append(transaction.getTransactionId()).append(", ");
+                mappedData.put("acquirer_ref_" + transaction.getTransactionId(), transaction.getPaymentDetails().getAcquirerReferenceNumber());
+            }
+            mappedData.put("related_transaction_ids", transactionIds.toString().replaceAll(", $", ""));
+        } else {
+            mappedData.put("related_transaction_ids", "None");
+        }
+
+        return mappedData;
+    }
+
+
     public static void main(String[] args) {
         // Example JSON
-        String jsonString =  "{"
+        String jsonString = getStringWithRelatedTransaction();
+        //String jsonString = getString();
+
+        // Parse JSON into JsonResponse object
+        JsonResponse response = JSONParser.parseJson(jsonString);
+
+        // Convert JsonResponse to HashMap
+        HashMap<String, String> receiptDataMap = JSONParser.convertToMap(response);
+
+        // Pass HashMap to ReceiptPrinter
+        ReceiptPrinter printer = new ReceiptPrinter(receiptDataMap);
+        printer.printReceipt();
+
+    }
+
+    private static String getStringWithRelatedTransaction() {
+        // Insert your JSON here
+        return "{"
                 + "\"data\": {"
                 + "\"merchant\": {"
                 + "\"address\": \"Vijzelstraat Amsterdam\","
@@ -153,23 +210,45 @@ public class JSONParser {
                 + "]"
                 + "},"
                 + "\"success\": true"
-                + "}"; // Insert your JSON here
+                + "}";
+    }
 
-        JsonResponse response = parseJson(jsonString);
-
-        // Example Output
-        System.out.println("Merchant Address: " + response.getData().getMerchant().getAddress());
-        System.out.println("Payment Method: " + response.getData().getPayment().getPaymentMethod());
-        System.out.println("Order Transaction ID: " + response.getData().getOrder().getTransactionId());
-
-        // Print related transactions
-        System.out.println("Related Transactions:");
-        for (RelatedTransaction transaction : response.getData().getRelatedTransactions()) {
-            System.out.println("  Transaction ID: " + transaction.getTransactionId());
-            System.out.println("  Acquirer Reference Number: " + transaction.getPaymentDetails().getAcquirerReferenceNumber());
-        }
-
-        System.out.println("Success: " + response.isSuccess());
+    private static String getString() {
+        // Insert your JSON here
+        return "{"
+                + "\"data\": {"
+                + "\"merchant\": {"
+                + "\"address\": \"Vijzelstraat Amsterdam\","
+                + "\"name\": \"MultiSafepay B.V.\""
+                + "},"
+                + "\"order\": {"
+                + "\"amount\": 1,"
+                + "\"amountrefunded\": 0,"
+                + "\"completed\": \"2025-05-13T12:10:56\","
+                + "\"currency\": \"EUR\","
+                + "\"items\": null,"
+                + "\"tip\": null,"
+                + "\"transaction_id\": \"1747131054104206\""
+                + "},"
+                + "\"payment\": {"
+                + "\"application_id\": \"a0000000041010\","
+                + "\"authorization_code\": \"426045\","
+                + "\"card_acceptor_location\": \"Amsterdam\","
+                + "\"card_entry_mode\": \"ICC_CONTACTLESS\","
+                + "\"card_expiry_date\": \"2908\","
+                + "\"cardholder_verification_method\": \"PLAINTEXT_PIN_OFFLINE\","
+                + "\"issuer_bin\": \"545366\","
+                + "\"issuer_country_code\": \"ES\","
+                + "\"last4\": \"2473\","
+                + "\"payment_method\": \"MASTERCARD\","
+                + "\"response_code\": \"00\","
+                + "\"terminal_id\": \"000006DT\""
+                + "},"
+                + "\"printed_on\": \"2025-05-14T14:28:40\","
+                + "\"related_transactions\": null"
+                + "},"
+                + "\"success\": true"
+                + "}";
 
     }
 }
