@@ -73,7 +73,7 @@ public class JSONParser {
                 order.setCompleted(orderJson.optString("completed", "Not available"));
             }
 
-            // Extract related transactions list safely
+            // Extract the related transactions list safely
             List<RelatedTransaction> relatedTransactions = new ArrayList<>();
             JSONArray relatedTransactionsArray = data.optJSONArray("related_transactions");
             if (relatedTransactionsArray != null) {
@@ -131,8 +131,8 @@ public class JSONParser {
         //String jsonString = getStringWithRelatedTransaction();
         //String jsonString = getString();
 
-        //JSONObject jsonObject = getJsonObjectWithRelatedTransactions();
-        JSONObject jsonObject = getJsonObject();
+        JSONObject jsonObject = getJsonObjectWithRelatedTransactions();
+        //JSONObject jsonObject = getJsonObject();
 
         //JSONObject jsonObject = getJsonObject();
         System.out.println(jsonObject.toString(4));
