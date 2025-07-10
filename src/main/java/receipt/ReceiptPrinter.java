@@ -1,6 +1,7 @@
 package receipt;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 
 public class ReceiptPrinter {
@@ -24,6 +25,7 @@ public class ReceiptPrinter {
     public void printReceipt() {
         buildReceiptHeader();
         appendBasicInfo();
+        appendItems(); // 👈 Add this line
         appendMonetaryInfo();
         appendRelatedTransactions();
         buildReceiptFooter();
@@ -63,6 +65,24 @@ public class ReceiptPrinter {
         String relatedTransactionIds = receiptData.getOrDefault("related_transaction_ids", NONE);
         if (!NONE.equals(relatedTransactionIds)) {
             appendLine("Related Transaction IDs", relatedTransactionIds);
+        }
+    }
+
+    private void appendItems() {
+        List<Item> items = jsonResponse.getData().getOrder().getItems();
+        if (items == null || items.isEmpty()) {
+            receiptBuilder.append("Items: None\n");
+            return;
+        }
+
+        receiptBuilder.append("Items:\n");
+        for (Item item : items) {
+            String line = String.format("- %s x%d @ %.2f %s",
+                    item.getName(),
+                    item.getQuantity(),
+                    item.getUnitPrice(),
+                    item.getCurrency());
+            receiptBuilder.append(line).append("\n");
         }
     }
 

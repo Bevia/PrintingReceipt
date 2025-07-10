@@ -71,6 +71,40 @@ public class JSONParser {
 
                 order.setCurrency(orderJson.optString("currency", "Not available"));
                 order.setCompleted(orderJson.optString("completed", "Not available"));
+
+                // 🔽 Parse "items" array from "order"
+                JSONObject itemsContainer = orderJson.optJSONObject("items");
+                if (itemsContainer != null) {
+                    JSONArray itemsArray = itemsContainer.optJSONArray("items");
+                    if (itemsArray != null) {
+                        List<Item> items = new ArrayList<>();
+                        for (int i = 0; i < itemsArray.length(); i++) {
+                            JSONObject itemJson = itemsArray.optJSONObject(i);
+                            if (itemJson != null) {
+                                Item item = new Item();
+                                item.setName(itemJson.optString("name", "Unnamed"));
+                                item.setCurrency(itemJson.optString("currency", "EUR"));
+
+                                String unitPriceStr = itemJson.optString("unit_price", "0");
+                                BigDecimal unitPrice = unitPriceStr.equals("null") || unitPriceStr.isEmpty()
+                                        ? BigDecimal.ZERO
+                                        : new BigDecimal(unitPriceStr);
+                                item.setUnitPrice(unitPrice);
+
+                                String itemPriceStr = itemJson.optString("item_price", "0");
+                                BigDecimal itemPrice = itemPriceStr.equals("null") || itemPriceStr.isEmpty()
+                                        ? BigDecimal.ZERO
+                                        : new BigDecimal(itemPriceStr);
+                                item.setItemPrice(itemPrice);
+
+                                item.setQuantity(itemJson.optInt("quantity", 1));
+
+                                items.add(item);
+                            }
+                        }
+                        order.setItems(items);
+                    }
+                }
             }
 
             // Extract the related transactions list safely

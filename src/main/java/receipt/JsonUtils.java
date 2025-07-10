@@ -30,6 +30,22 @@ public class JsonUtils {
         mappedData.put("order_currency", data.getOrder().getCurrency());
         mappedData.put("order_tip", String.valueOf(data.getOrder().getTip()));
 
+        // Items
+        List<Item> items = data.getOrder().getItems();
+        if (items != null && !items.isEmpty()) {
+            for (int i = 0; i < items.size(); i++) {
+                Item item = items.get(i);
+                String prefix = "item_" + (i + 1); // You can use 1-based indexing for clarity
+                mappedData.put(prefix + "_name", item.getName());
+                mappedData.put(prefix + "_quantity", String.valueOf(item.getQuantity()));
+                mappedData.put(prefix + "_unit_price", String.valueOf(item.getUnitPrice()));
+                mappedData.put(prefix + "_item_price", String.valueOf(item.getItemPrice()));
+                mappedData.put(prefix + "_currency", item.getCurrency());
+            }
+        } else {
+            mappedData.put("items", "None");
+        }
+
         // Related Transactions
         List<RelatedTransaction> relatedTransactions = data.getRelatedTransactions();
         if (relatedTransactions != null && !relatedTransactions.isEmpty()) {

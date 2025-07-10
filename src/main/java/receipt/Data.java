@@ -7,6 +7,7 @@ public class Data {
     private Merchant merchant;
     private Payment payment;
     private Order order;
+    private Item item;
     private List<RelatedTransaction> relatedTransactions;
 
     // Getters and Setters
@@ -23,5 +24,7 @@ public class Data {
     public void setOrder(Order order) { this.order = order; }
 
     public List<RelatedTransaction> getRelatedTransactions() { return relatedTransactions; }
-    public void setRelatedTransactions(List<RelatedTransaction> relatedTransactions) { this.relatedTransactions = relatedTransactions; }
+    public void setRelatedTransactions(List<RelatedTransaction> relatedTransactions) { this.relatedTransactions = relatedTransactions;
+
+    }
 }

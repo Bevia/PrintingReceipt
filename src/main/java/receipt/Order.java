@@ -1,6 +1,7 @@
 package receipt;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public class Order {
     private String transactionId;
@@ -9,6 +10,7 @@ public class Order {
     private BigDecimal tip;
     private String currency;
     private String completed;
+    private List<Item> items;
 
     // Getters and Setters
     public String getTransactionId() { return transactionId; }
@@ -28,4 +30,12 @@ public class Order {
 
     public BigDecimal getTip() {return tip;}
     public void setTip(BigDecimal tip) {this.tip = tip;}
+
+    public void setItems(List<Item> items) {
+        this.items = items;
+    }
+
+    public List<Item> getItems() {
+        return items;
+    }
 }
