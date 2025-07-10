@@ -7,7 +7,6 @@ public class Data {
     private Merchant merchant;
     private Payment payment;
     private Order order;
-    private Item item;
     private List<RelatedTransaction> relatedTransactions;
 
     // Getters and Setters
