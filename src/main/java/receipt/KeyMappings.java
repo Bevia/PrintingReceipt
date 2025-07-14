@@ -26,7 +26,7 @@ public enum KeyMappings {
     RELATED_TRANSACTIONS("related_transactions", "Related Transactions"),
     UNIT_PRICE("unit_price", "Unit Price"),
     MERCHANT("merchant", "Merchant"),
-    AMOUNT_REFUNDED("amount_refunded", "Amount Refunded"),
+    AMOUNT_REFUNDED("amountrefunded", "Amount Refunded"),
     MERCHANT_ADDRESS("merchant_address", "Merchant Address"),
     MERCHANT_NAME("merchant_name", "Merchant Name"),
     PAYMENT_METHOD("payment_method", "Payment Method"),

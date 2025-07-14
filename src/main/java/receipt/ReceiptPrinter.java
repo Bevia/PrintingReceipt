@@ -11,6 +11,7 @@ public class ReceiptPrinter {
     private static final String CURRENCY_PREFIX = "CURRENCY: ";
     private static final String AMOUNT_PREFIX = "AMOUNT: ";
     private static final String TIP_PREFIX = "TIP: ";
+    private static final String AMOUNT_REFUNDED = "AMOUNT REFUNDED: ";
 
     private final JsonResponse jsonResponse;
     private final Map<String, String> receiptData;
@@ -41,7 +42,7 @@ public class ReceiptPrinter {
         Data data = jsonResponse.getData();
         appendLine("Printed On", getValue(KeyMappings.PRINTED_ON.getKey(), data.getPrintedOn()));
         appendLine("Merchant Name", getValue(KeyMappings.MERCHANT_NAME.getKey(), data.getMerchant().getName()));
-        appendLine("Merchant Address", getValue(KeyMappings.MERCHANT_NAME.getKey(), data.getMerchant().getAddress()));
+        appendLine("Merchant Address", getValue(KeyMappings.MERCHANT_ADDRESS.getKey(), data.getMerchant().getAddress()));
         appendLine("Payment Method", getValue(KeyMappings.PAYMENT_METHOD.getKey(), data.getPayment().getPaymentMethod()));
         appendLine("Transaction ID", getValue(KeyMappings.ORDER_TRANSACTION_ID.getKey(), data.getOrder().getTransactionId()));
     }
@@ -50,8 +51,9 @@ public class ReceiptPrinter {
         Order order = jsonResponse.getData().getOrder();
         appendMoneyAmount(AMOUNT_PREFIX, order.getAmount());
         appendMoneyAmount(TIP_PREFIX, order.getTip());
+        appendMoneyAmount(AMOUNT_REFUNDED, order.getAmountRefunded());
         receiptBuilder.append(CURRENCY_PREFIX)
-                .append(getValue("order_currency", order.getCurrency()))
+                .append(getValue(KeyMappings.ORDER_CURRENCY.getKey(), order.getCurrency()))
                 .append("\n");
     }
 
