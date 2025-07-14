@@ -3,6 +3,8 @@ package receipt;
 public class Payment {
     private String applicationId;
     private String authorizationCode;
+    private String cardAcceptorLocation;
+    private String cardExpiryDate;
     private String cardholderVerificationMethod;
     private String cardEntryMode;
     private String issuerBin;
@@ -42,4 +44,20 @@ public class Payment {
 
     public String getTerminalId() { return terminalId; }
     public void setTerminalId(String terminalId) { this.terminalId = terminalId; }
+
+    public String getCardAcceptorLocation() {
+        return cardAcceptorLocation;
+    }
+
+    public void setCardAcceptorLocation(String cardAcceptorLocation) {
+        this.cardAcceptorLocation = cardAcceptorLocation;
+    }
+
+    public String getCardExpiryDate() {
+        return cardExpiryDate;
+    }
+
+    public void setCardExpiryDate(String cardExpiryDate) {
+        this.cardExpiryDate = cardExpiryDate;
+    }
 }

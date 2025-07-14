@@ -23,111 +23,141 @@ public class JSONParser {
 
             // Map values to Merchant object
             Merchant merchant = new Merchant();
-            JSONObject merchantJson = data.optJSONObject("merchant");
-            if (merchantJson != null) {
-                merchant.setAddress(merchantJson.optString("address", "Not available"));
-                merchant.setName(merchantJson.optString("name", "Not available"));
+            if (data.has("merchant")) {
+                JSONObject merchantJson = data.optJSONObject(KeyMappings.MERCHANT.getKey()); // Use `optJSONObject`
+                if (merchantJson != null) {
+                    merchant.setAddress(merchantJson.optString(KeyMappings.ADDRESS.getKey(), "Not available"));
+                    merchant.setName(merchantJson.optString(KeyMappings.NAME.getKey(), "Not available"));
+                }
             }
 
             // Map values to Payment object
             Payment payment = new Payment();
-            JSONObject paymentJson = data.optJSONObject("payment");
-            if (paymentJson != null) {
-                payment.setApplicationId(paymentJson.optString("application_id", "Not available"));
-                payment.setAuthorizationCode(paymentJson.optString("authorization_code", "Not available"));
-                payment.setCardholderVerificationMethod(paymentJson.optString("cardholder_verification_method", "Not available"));
-                payment.setCardEntryMode(paymentJson.optString("card_entry_mode", "Not available"));
-                payment.setIssuerBin(paymentJson.optString("issuer_bin", "Not available"));
-                payment.setIssuerCountryCode(paymentJson.optString("issuer_country_code", "Not available"));
-                payment.setLast4(paymentJson.optString("last4", "Not available"));
-                payment.setPaymentMethod(paymentJson.optString("payment_method", "Not available"));
-                payment.setResponseCode(paymentJson.optString("response_code", "Not available"));
-                payment.setTerminalId(paymentJson.optString("terminal_id", "Not available"));
+            if (data.has("payment")) {
+                JSONObject paymentJson = data.optJSONObject("payment");
+                if (paymentJson != null) {
+                    payment.setApplicationId(paymentJson.optString(KeyMappings.APPLICATION_ID.getKey(), "Not available"));
+                    payment.setAuthorizationCode(paymentJson.optString(KeyMappings.AUTHORIZATION_CODE.getKey(), "Not available"));
+                    payment.setCardholderVerificationMethod(paymentJson.optString(KeyMappings.CARDHOLDER_VERIFICATION_METHOD.getKey(), "Not available"));
+                    payment.setCardAcceptorLocation(paymentJson.optString(KeyMappings.CARD_ACCEPTOR_LOCATION.getKey(), "Not available"));
+                    payment.setCardExpiryDate(paymentJson.optString(KeyMappings.CARD_EXPIRY_DATE.getKey(), "Not available"));
+                    payment.setCardEntryMode(paymentJson.optString(KeyMappings.CARD_ENTRY_MODE.getKey(), "Not available"));
+                    payment.setIssuerBin(paymentJson.optString(KeyMappings.ISSUER_BIN.getKey(), "Not available"));
+                    payment.setIssuerCountryCode(paymentJson.optString(KeyMappings.ISSUER_COUNTRY_CODE.getKey(), "Not available"));
+                    payment.setLast4(paymentJson.optString(KeyMappings.LAST4.getKey(), "Not available"));
+                    payment.setPaymentMethod(paymentJson.optString(KeyMappings.PAYMENT_METHOD.getKey(), "Not available"));
+                    payment.setResponseCode(paymentJson.optString(KeyMappings.RESPONSE_CODE.getKey(), "Not available"));
+                    payment.setTerminalId(paymentJson.optString(KeyMappings.TERMINAL_ID.getKey(), "Not available"));
+                }
             }
 
             // Map values to Order object
             Order order = new Order();
-            JSONObject orderJson = data.optJSONObject("order");
-            if (orderJson != null) {
-                order.setTransactionId(orderJson.optString("transaction_id", "Not available"));
+            if (data.has("order")) {
+                JSONObject orderJson = data.optJSONObject("order");
+                if (orderJson != null) {
+                    order.setTransactionId(orderJson.optString(KeyMappings.TRANSACTION_ID.getKey(), "Not available"));
 
-                String amountStr = orderJson.optString("amount", "0");
-                BigDecimal amount = amountStr.equals("null") || amountStr.isEmpty()
-                        ? BigDecimal.ZERO
-                        : new BigDecimal(amountStr).divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
-                order.setAmount(amount);
+                    //amount:
+                    int amountInt = orderJson.optInt(KeyMappings.AMOUNT.getKey(), 0); // Defaults to 0 if not present
+                    BigDecimal amount = BigDecimal.valueOf(amountInt)
+                            .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
 
-                String tipStr = orderJson.optString("tip", "0");
-                BigDecimal tip = tipStr.equals("null") || tipStr.isEmpty()
-                        ? BigDecimal.ZERO
-                        : new BigDecimal(tipStr).divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
-                order.setTip(tip);
+                    order.setAmount(amount);
 
-                String amountRefundedStr = orderJson.optString("amountrefunded", "0");
-                BigDecimal amountRefunded = amountRefundedStr.equals("null") || amountRefundedStr.isEmpty()
-                        ? BigDecimal.ZERO
-                        : new BigDecimal(amountRefundedStr).divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
-                order.setAmountRefunded(amountRefunded);
-
-                order.setCurrency(orderJson.optString("currency", "Not available"));
-                order.setCompleted(orderJson.optString("completed", "Not available"));
-
-                // 🔽 Parse "items" array from "order"
-                JSONObject itemsContainer = orderJson.optJSONObject("items");
-                if (itemsContainer != null) {
-                    JSONArray itemsArray = itemsContainer.optJSONArray("items");
-                    if (itemsArray != null) {
-                        List<Item> items = new ArrayList<>();
-                        for (int i = 0; i < itemsArray.length(); i++) {
-                            JSONObject itemJson = itemsArray.optJSONObject(i);
-                            if (itemJson != null) {
-                                Item item = new Item();
-                                item.setName(itemJson.optString("name", "Unnamed"));
-                                item.setCurrency(itemJson.optString("currency", "EUR"));
-
-                                String unitPriceStr = itemJson.optString("unit_price", "0");
-                                BigDecimal unitPrice = unitPriceStr.equals("null") || unitPriceStr.isEmpty()
-                                        ? BigDecimal.ZERO
-                                        : new BigDecimal(unitPriceStr);
-                                item.setUnitPrice(unitPrice);
-
-                                String itemPriceStr = itemJson.optString("item_price", "0");
-                                BigDecimal itemPrice = itemPriceStr.equals("null") || itemPriceStr.isEmpty()
-                                        ? BigDecimal.ZERO
-                                        : new BigDecimal(itemPriceStr);
-                                item.setItemPrice(itemPrice);
-
-                                item.setQuantity(itemJson.optInt("quantity", 1));
-
-                                items.add(item);
-                            }
+                    //tip:
+                    BigDecimal tip = BigDecimal.ZERO;
+                    if (orderJson.has(KeyMappings.TIP.getKey()) && !orderJson.isNull(KeyMappings.TIP.getKey())) {
+                        JSONObject tipJson = orderJson.optJSONObject(KeyMappings.TIP.getKey());
+                        if (tipJson != null) {
+                            int tipInt = tipJson.optInt(KeyMappings.AMOUNT.getKey(), 0);
+                            tip = BigDecimal.valueOf(tipInt)
+                                    .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
                         }
-                        order.setItems(items);
+                    } else {
+                        System.out.println("Warning: 'tip' is missing or null in the JSON!");
+                    }
+                    order.setTip(tip);
+
+                    //amountRefunded:
+                    if (!orderJson.has(KeyMappings.AMOUNT_REFUNDED.getKey()) || orderJson.isNull(KeyMappings.AMOUNT_REFUNDED.getKey())) {
+                        System.out.println("Warning: 'amountrefunded' is missing or null in the JSON!");
+                    }
+                    int amountRefundedInt = orderJson.optInt(KeyMappings.AMOUNT_REFUNDED.getKey(), 0);
+                    BigDecimal amountRefunded = BigDecimal.valueOf(amountRefundedInt)
+                            .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+                    order.setAmountRefunded(amountRefunded);
+
+                    order.setCurrency(orderJson.optString(KeyMappings.CURRENCY.getKey(), "Not available"));
+                    order.setCompleted(orderJson.optString("completed", "Not available"));
+
+                    //Check if items exist
+                    JSONObject itemsContainer = orderJson.optJSONObject("items");
+                    if (itemsContainer != null) {
+                        JSONArray itemsArray = itemsContainer.optJSONArray("items");
+                        if (itemsArray != null) {
+                            List<Item> items = new ArrayList<>();
+
+                            for (int i = 0; i < itemsArray.length(); i++) {
+                                JSONObject itemJson = itemsArray.optJSONObject(i);
+                                if (itemJson != null) {
+                                    Item item = new Item();
+
+                                    // Parse basic fields
+                                    item.setName(itemJson.optString(KeyMappings.NAME.getKey(), "Unnamed"));
+                                    item.setCurrency(itemJson.optString(KeyMappings.CURRENCY.getKey(), "EUR"));
+                                    item.setQuantity(itemJson.optInt("quantity", 1));
+
+                                    // Parse unit price (in euros)
+                                    String unitPriceStr = itemJson.optString(KeyMappings.UNIT_PRICE.getKey(), "0");
+                                    BigDecimal unitPrice = unitPriceStr.equals("null") || unitPriceStr.isEmpty()
+                                            ? BigDecimal.ZERO
+                                            : new BigDecimal(unitPriceStr);
+                                    item.setUnitPrice(unitPrice);
+
+                                    // Calculate total: unit_price × quantity
+                                    BigDecimal totalPrice = unitPrice.multiply(BigDecimal.valueOf(item.getQuantity()));
+                                    item.setItemPrice(totalPrice);
+
+                                    // Optional log for debugging
+                                    System.out.println("SunmiPrinting: " + item.getName() +
+                                            ", Qty: " + item.getQuantity() +
+                                            ", Unit: " + item.getUnitPrice() +
+                                            ", Total: " + item.getItemPrice());
+
+                                    items.add(item);
+                                }
+                            }
+
+                            order.setItems(items);
+                        }
                     }
                 }
             }
 
             // Extract the related transactions list safely
             List<RelatedTransaction> relatedTransactions = new ArrayList<>();
-            JSONArray relatedTransactionsArray = data.optJSONArray("related_transactions");
+            JSONArray relatedTransactionsArray = data.optJSONArray(KeyMappings.RELATED_TRANSACTIONS.getKey());
             if (relatedTransactionsArray != null) {
                 for (int i = 0; i < relatedTransactionsArray.length(); i++) {
                     JSONObject transactionJson = relatedTransactionsArray.optJSONObject(i);
                     if (transactionJson != null) {
                         RelatedTransaction transaction = new RelatedTransaction();
-                        transaction.setTransactionId(transactionJson.optLong("transaction_id", 0));
+                        transaction.setTransactionId(transactionJson.optLong(KeyMappings.TRANSACTION_ID.getKey(), 0));
 
-                        String amountStr = transactionJson.optString("amount", "0");
-                        BigDecimal amount = amountStr.equals("null") || amountStr.isEmpty()
+                        String amountStr = transactionJson.optString(KeyMappings.AMOUNT.getKey(), "0");
+
+                        BigDecimal amount = amountStr.equalsIgnoreCase("null")
+                                || amountStr.trim().isEmpty()
                                 ? BigDecimal.ZERO
-                                : new BigDecimal(amountStr).divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
+                                : new BigDecimal(amountStr).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
                         order.setAmount(amount);
 
-                        transaction.setReferenceTransactionId(transactionJson.optLong("reference_transaction_id", 0));
-                        transaction.setOrderId(transactionJson.optString("order_id", "Not available"));
-                        transaction.setCurrency(transactionJson.optString("currency", "Not available"));
+                        transaction.setReferenceTransactionId(transactionJson.optLong(KeyMappings.REFERENCE_TRANSACTION_ID.getKey(), 0));
+                        transaction.setOrderId(transactionJson.optString(KeyMappings.ORDER_ID.getKey(), "Not available"));
+                        transaction.setCurrency(transactionJson.optString(KeyMappings.CURRENCY.getKey(), "Not available"));
 
-                        JSONObject paymentDetailsJson = transactionJson.optJSONObject("payment_details");
+                        JSONObject paymentDetailsJson = transactionJson.optJSONObject(KeyMappings.PAYMENT_DETAILS.getKey());
                         if (paymentDetailsJson != null) {
                             PaymentDetails paymentDetails = new PaymentDetails();
                             paymentDetails.setAcquirerReferenceNumber(paymentDetailsJson.optString("acquirer_reference_number", "Not available"));

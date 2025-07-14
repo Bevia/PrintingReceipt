@@ -39,11 +39,11 @@ public class ReceiptPrinter {
 
     private void appendBasicInfo() {
         Data data = jsonResponse.getData();
-        appendLine("Printed On", getValue("printed_on", data.getPrintedOn()));
-        appendLine("Merchant Name", getValue("merchant_name", data.getMerchant().getName()));
-        appendLine("Merchant Address", getValue("merchant_address", data.getMerchant().getAddress()));
-        appendLine("Payment Method", getValue("payment_method", data.getPayment().getPaymentMethod()));
-        appendLine("Transaction ID", getValue("order_transaction_id", data.getOrder().getTransactionId()));
+        appendLine("Printed On", getValue(KeyMappings.PRINTED_ON.getKey(), data.getPrintedOn()));
+        appendLine("Merchant Name", getValue(KeyMappings.MERCHANT_NAME.getKey(), data.getMerchant().getName()));
+        appendLine("Merchant Address", getValue(KeyMappings.MERCHANT_NAME.getKey(), data.getMerchant().getAddress()));
+        appendLine("Payment Method", getValue(KeyMappings.PAYMENT_METHOD.getKey(), data.getPayment().getPaymentMethod()));
+        appendLine("Transaction ID", getValue(KeyMappings.ORDER_TRANSACTION_ID.getKey(), data.getOrder().getTransactionId()));
     }
 
     private void appendMonetaryInfo() {
